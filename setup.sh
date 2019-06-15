@@ -105,8 +105,7 @@ desinstalar()
 }
 
 
-if test $(w |tail -$[$(w | wc -l)-2] | grep "sh setup" | wc -l) 2> /dev/null -eq 0 #comprueba que se ejecute con source 
-then
+
 	if test $(git --help 2>/dev/null | wc -l ) -ne 0
 	then
 		if test $USER = "root" # Debe ser el usuario root quien utilice el shell 
@@ -188,6 +187,4 @@ then
 	else
 		echo "Debe tener instalado Git para utilizar este shell "
 	fi	
-else
-	echo "No puede ejecuar este shell script con el comando 'sh' use source o el nombre del archivo setup.sh"
-fi
+
