@@ -210,7 +210,7 @@ desinstalar()
 
 
 
-if test $(w |tail -$[$(w | wc -l)-2] | grep "sh setup" | wc -l) -eq 0 #comprueba que se ejecute con source 
+if test $(w |tail -$[$(w | wc -l)-2] | grep "sh setup" | wc -l) 2> /dev/null -eq 0 #comprueba que se ejecute con source 
 
 then
 
