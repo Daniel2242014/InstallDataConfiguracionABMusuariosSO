@@ -186,5 +186,5 @@ desinstalar()
 			echo "Debe ser root para ejecutar este software"
 		fi
 	else
-		echo "Debe tener instalado Git para utilizar este shell "
+		echo "Dbe tener instalado Git para utilizar este shell "
 	fi	
