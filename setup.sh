@@ -187,4 +187,3 @@ desinstalar()
 	else
 		echo "Debe tener instalado Git para utilizar este shell "
 	fi	
-
