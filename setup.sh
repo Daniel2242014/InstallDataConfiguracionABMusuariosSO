@@ -133,7 +133,7 @@ then
 		then
 			if test -f /var/DataConfiguracionABMusuariosSO/I_Inxo
 			then
-              source informix_install2.sh 
+              source Informix_install2.sh 
 			fi 
 		    source /var/DataConfiguracionABMusuariosSO/adm_tool.sh
 		else
