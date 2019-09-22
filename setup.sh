@@ -167,5 +167,5 @@ then
 	echo "Debe ser root para ejecutar este software"
     fi
 else
-    echo "Dbe tener instalado Git para utilizar este shell "
+    echo "Debe tener instalado Git para utilizar este shell "
 fi	
