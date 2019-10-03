@@ -139,8 +139,6 @@ EOF
 		iptables -P INPUT DROP
 		iptables -P OUTPUT DROP
 		iptables -P FORWARD DROP
-		iptables -t nat -P PREROUTING DROP
-		iptables -t nat -P POSTROUTING DROP
 
 		# puede entrar a la red todo lo que venga por Informix (9088)
 		iptables -A INPUT -p tcp --destination-port 9088 -j ACCEPT
