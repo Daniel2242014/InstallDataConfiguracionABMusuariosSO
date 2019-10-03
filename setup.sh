@@ -95,13 +95,63 @@ EOF
 
 		source /var/DataConfiguracionABMusuariosSO/sub_shell/configurarRed.sh
 		configurarRed
+		echo "Desea eliminar FirewallD [0=no , 1=si]"
+		read rr
+		case $rr in
+			1)
+				systemctl stop firewalld
+				systemctl disable firewalld
+				yum remove firewall
+			;;
 
-		systemctl stop firewalld
-		systemctl disable firewalld
-		systemctl stop NetworkManager
-		systemctl disable NetworkManager
-		yum remove NetworkManager firewalld
+			*)
+				echo "No se prosede"
+			;;
+		esac
+
+		echo "Desea eliminar NetworkManager [0=no , 1=si]"
+		read rr
+		case $rr in
+			1)
+				systemctl stop NetworkManager
+				systemctl disable NetworkManager
+				yum remove NetworkManager
+			;;
+
+			*)
+				echo "No se prosede"
+			;;
+		esac
 		yum install policycoreutils-python git
+		echo "Modificado firewall"	
+
+		semanage port -a -t ssh_port_t -p tcp 20022
+		sed -i "s|#Port 22|Port=20022|" /etc/ssh/sshd_config
+		systemctl restart sshd
+	
+		## FLUSH de reglas
+		iptables -F
+		iptables -X
+		iptables -Z
+		iptables -t nat -F
+
+		## Establecemos politica por defecto
+		iptables -P INPUT DROP
+		iptables -P OUTPUT DROP
+		iptables -P FORWARD DROP
+		iptables -t nat -P PREROUTING DROP
+		iptables -t nat -P POSTROUTING DROP
+
+		# puede entrar a la red todo lo que venga por Informix (9088)
+		iptables -A INPUT -p tcp --destination-port 9088 -j ACCEPT
+		iptables -A OUTPUT -p tcp --destination-port 9088 -j ACCEPT
+		iptables -A INPUT -p udp --destination-port 9088 -j ACCEPT
+		iptables -A OUTPUT -p udp --destination-port 9088 -j ACCEPT
+
+		# solo los prog pueden conectarse al servidor por ssh (1112)
+		iptables -A INPUT -s 192.168.14.0/26 -p tcp --destination-port 20022 -j ACCEPT
+		iptable -A OUTPUT -p tcp --destination-port 20022 -j ACCEPT
+
 		if ! test -d /opt/IBM
 		then
 			echo "¿Desea ademas instalar el gestor de base de datos Informix? [1=si, 0=no]"
@@ -119,6 +169,8 @@ EOF
 		fi
 	
 		echo "Proseso terminado con exito, ejecute 'source setup.sh' desde la consola"
+		echo "Se recomienda reiniciar el sistema" 
+		read fff	
    fi
    
 }
@@ -147,10 +199,10 @@ then
 		else
 		    echo "   _____________________________________________  "
 		    echo "   |                                           | "
-		    echo "   |                                           | "
-		    echo "   |           ABM usuarios y grupos           | "
+		    echo "   |        	      INSTALADOR                 | "
+		    echo "   |    Centro de computos y Abm usuarios      | "
 		    echo "   |                  por Bit                  | "
-		    echo "   |                                           | "
+		    echo "   |                Vercion 3.0                | "
 		    echo "   |___________________________________________| "
 		    echo "" 
 		    echo "debe instalar el softare para utilizarlo" 
@@ -167,5 +219,5 @@ then
 	echo "Debe ser root para ejecutar este software"
     fi
 else
-    echo "Debe tener instalado Git para utilizar este shell "
+    echo "Dbe tener instalado Git para utilizar este shell "
 fi	
