@@ -148,7 +148,7 @@ EOF
 
 		# solo los prog pueden conectarse al servidor por ssh (1112)
 		iptables -A INPUT -s 192.168.14.0/26 -p tcp --destination-port 20022 -j ACCEPT
-		iptable -A OUTPUT -p tcp --destination-port 20022 -j ACCEPT
+		iptables -A OUTPUT -p tcp --destination-port 20022 -j ACCEPT
 
 		if ! test -d /opt/IBM
 		then
