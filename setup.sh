@@ -123,32 +123,18 @@ EOF
 			;;
 		esac
 		yum install policycoreutils-python git
-		echo "Modificado firewall"	
-
+		yum install iptables-services 
+		sed -i 's|IPTABLES_SAVE_ON_STOP="no"|IPTABLES_SAVE_ON_STOP="yes"|' /etc/sysconfig/iptables-config
+		sed -i 's|IPTABLES_SAVE_ON_RESTART="no"|IPTABLES_SAVE_ON_RESTART="yes"|' /etc/sysconfig/iptables-config
+		sed -i 's|IPTABLES_SAVE_COUNTER="no"|IPTABLES_SAVE_COUNTER="yes"|' /etc/sysconfig/iptables-config
+		sed -i 's|IPTABLES_STATUS_NUMERIC="no"|IPTABLES_STATUS_NUMERIC="yes"|' /etc/sysconfig/iptables-config
+		systemctl enable iptables
+		systemctl start iptables
+		chkconfig iptables
 		semanage port -a -t ssh_port_t -p tcp 20022
-		sed -i "s|#Port 22|Port=20022|" /etc/ssh/sshd_config
+		sed -i "s|#Port 22|Port 20022|" /etc/ssh/sshd_config
 		systemctl restart sshd
 	
-		## FLUSH de reglas
-		iptables -F
-		iptables -X
-		iptables -Z
-		iptables -t nat -F
-
-		## Establecemos politica por defecto
-		iptables -P INPUT DROP
-		iptables -P OUTPUT DROP
-		iptables -P FORWARD DROP
-
-		# puede entrar a la red todo lo que venga por Informix (9088)
-		iptables -A INPUT -p tcp --destination-port 9088 -j ACCEPT
-		iptables -A OUTPUT -p tcp --destination-port 9088 -j ACCEPT
-		iptables -A INPUT -p udp --destination-port 9088 -j ACCEPT
-		iptables -A OUTPUT -p udp --destination-port 9088 -j ACCEPT
-
-		# solo los prog pueden conectarse al servidor por ssh (1112)
-		iptables -A INPUT -s 192.168.14.0/26 -p tcp --destination-port 20022 -j ACCEPT
-		iptables -A OUTPUT -p tcp --destination-port 20022 -j ACCEPT
 
 		if ! test -d /opt/IBM
 		then
@@ -156,16 +142,18 @@ EOF
 			read ddd
 			case $ddd in 
 			1)
-			source informix_install.sh 
+				source informix_install.sh 
 			;;
 			*)
-			echo "No se prosedera"
+				echo "No se prosedera"
 			;;
 			esac
 			else
 			echo "Informix ya esta instalado en el sistema"
 		fi
-	
+		touch /var/DataConfiguracionABMusuariosSO/fire.data
+		source /var/DataConfiguracionABMusuariosSO/lib/fireMod.sh
+		fireMod1
 		echo "Proseso terminado con exito, ejecute 'source setup.sh' desde la consola"
 		echo "Se recomienda reiniciar el sistema" 
 		read fff	
@@ -197,7 +185,7 @@ then
 		else
 		    echo "   _____________________________________________  "
 		    echo "   |                                           | "
-		    echo "   |        	      INSTALADOR                 | "
+		    echo "   |        	    INSTALADOR                 | "
 		    echo "   |    Centro de computos y Abm usuarios      | "
 		    echo "   |                  por Bit                  | "
 		    echo "   |                Vercion 3.0                | "
